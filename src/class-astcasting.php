@@ -35,8 +35,13 @@ class AstCasting {
 			'casting-talent',
 			'casting',
 			array(
-				'label'       => '出演タレント',
-				'description' => '出演タレントを選択するための分類です。',
+				'label'             => '出演タレント',
+				'description'       => '出演タレントを選択するための分類です。',
+				'public'            => true,
+				'show_ui'           => true,
+				'show_in_nav_menus' => true,
+				'hierarchical'      => true,
+				'show_in_rest'      => true,
 			)
 		);
 	}

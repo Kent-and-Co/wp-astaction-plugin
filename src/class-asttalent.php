@@ -35,8 +35,13 @@ class AstTalent {
 			'talent-type',
 			'talent',
 			array(
-				'label'       => 'タレント分類',
-				'description' => 'タレントの種類です。',
+				'label'             => 'タレント分類',
+				'description'       => 'タレントの種類です。',
+				'public'            => true,
+				'show_ui'           => true,
+				'show_in_nav_menus' => true,
+				'hierarchical'      => true,
+				'show_in_rest'      => true,
 			)
 		);
 	}
