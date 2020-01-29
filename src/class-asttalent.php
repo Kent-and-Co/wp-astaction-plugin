@@ -24,6 +24,7 @@ class AstTalent {
 				'has_archive'   => true,
 				'menu_position' => 5,
 				'supports'      => $support,
+				'show_in_rest'  => true,
 			)
 		);
 	}
