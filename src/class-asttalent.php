@@ -4,7 +4,9 @@
 class AstTalent {
 	public function __construct() {
 		add_action( 'init', array( $this, 'create_post_type' ) );
+		add_action( 'init', array( $this, 'create_taxonomy' ) );
 	}
+
 	static function create_post_type() {
 		$support = [// 投稿画面で表示される項目の設定
 			'title', // 記事タイトル
@@ -22,6 +24,18 @@ class AstTalent {
 				'has_archive'   => true,
 				'menu_position' => 5,
 				'supports'      => $support,
+			)
+		);
+	}
+
+	static function create_taxonomy() {
+		// 新規分類を作成
+		register_taxonomy(
+			'talent-type',
+			'talent',
+			array(
+				'label'       => 'タレント分類',
+				'description' => 'タレントの種類です。',
 			)
 		);
 	}
