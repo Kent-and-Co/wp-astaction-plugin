@@ -11,3 +11,6 @@ License: GPL2
 
 include 'src/class-asttalent.php';
 include 'src/class-astcasting.php';
+include 'src/class-astcastinghistory.php';
+include 'src/class-astcastingtalenttaxonomy.php';
+include 'src/class-astcastinggenretaxonomy.php';

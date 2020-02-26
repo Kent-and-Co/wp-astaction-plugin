@@ -1,26 +1,24 @@
 <?php
-// Create Custom post type "casting"
+// Create Custom post type "casting-history"
 
-class AstCasting {
+class AstCastingHistory {
 	public function __construct() {
 		add_action( 'init', array( $this, 'create_post_type' ) );
-		add_action( 'admin_menu', array( $this, 'ast_add_casting_fields' ) );
-		add_action( 'save_post', array( $this, 'ast_save_casting_fields' ) );
-		add_action( 'admin_head-post-new.php', array( $this, 'ast_load_casting_script' ) );
+		add_action( 'admin_menu', array( $this, 'ast_add_casting_history_fields' ) );
+		//add_action( 'save_post', array( $this, 'ast_save_casting_history_fields' ) );
+		add_action( 'admin_head-post-new.php', array( $this, 'ast_load_casting_history_script' ) );
 	}
 
 	static function create_post_type() {
 		$support = array( // 投稿画面で表示される項目の設定
 			'title', // 記事タイトル
-			'editor', // 記事本文
-			'thumbnail', // アイキャッチ画像
 		);
 		register_post_type(
-			'casting', // URLになる部分
+			'casting-history', // URLになる部分
 			array(
-				'label'         => '出演情報', // 管理画面の左メニューに表示されるテキスト
+				'label'         => '出演履歴', // 管理画面の左メニューに表示されるテキスト
 				'labels'        => array(
-					'all_items' => '出演情報一覧', // 管理画面の左メニューの下層に表示されるテキスト
+					'all_items' => '出演履歴一覧', // 管理画面の左メニューの下層に表示されるテキスト
 				),
 				'public'        => true,
 				'has_archive'   => true,
@@ -32,16 +30,15 @@ class AstCasting {
 	}
 
 	// Add custom fields section
-	static function ast_add_casting_fields() {
+	static function ast_add_casting_history_fields() {
 		//add_meta_box(表示される入力ボックスのHTMLのID, ラベル, 表示する内容を作成する関数名, 投稿タイプ, 表示方法)
-		add_meta_box( 'ast_casting_info', '出演情報', array( $this, 'ast_casting_info_fields' ), 'casting', 'normal' );
+		add_meta_box( 'ast_casting_history_info', '出演情報', array( $this, 'ast_casting_history_info_fields' ), 'casting-history', 'normal' );
 	}
 
 	// Add custom fields
-	static function ast_casting_info_fields() {
+	static function ast_casting_history_info_fields() {
 		global $post;
 
-		//下記に管理画面に表示される入力エリアを作ります。「get_post_meta()」は現在入力されている値を表示するための記述です。
 		$casting_type = get_post_meta( $post->ID, 'casting_type', true );
 		if ( empty( $casting_type ) ) {
 			$casting_type = 'stage';
@@ -52,10 +49,7 @@ class AstCasting {
 		<table>
 			<caption>
 				<h3>作品情報</h3>
-				<p>注意：この情報が各個人の出演履歴に反映されます。<br>
-					初日と楽日をおなじにすると単日公演として処理されます。<br>
-					この選択と出演ジャンルの選択は自動で一致しません。
-				</p>
+				<p>注意：この情報が各個人の出演履歴に反映されます。初日と楽日をおなじにすると単日公演として処理されます。</p>
 				<select name="casting_type" id="casting_type">
 					<option value="stage"<?php 'stage' === $casting_type ? print $selected : ''; ?>>舞台</option>
 					<option value="tv"<?php 'tv' === $casting_type ? print $selected : ''; ?>>TV</option>
@@ -244,121 +238,12 @@ class AstCasting {
 		<?php
 	}
 
-	// カスタムフィールドの値を保存
-	static function ast_save_casting_fields( $post_id ) {
-		$casting_type = array(
-			'stage',
-			'tv',
-			'movie',
-			'cm',
-			'pv',
-			'show',
-			'webtv',
-		);
-		$field_names  = array(
-			'stage_first_year',
-			'stage_first_month',
-			'stage_first_date',
-			'stage_final_year',
-			'stage_final_month',
-			'stage_final_date',
-			'stage_title',
-			'stage_venue',
-			'stage_address',
-			'tv_first_year',
-			'tv_first_month',
-			'tv_first_date',
-			'tv_first_hour',
-			'tv_first_time',
-			'tv_title',
-			'tv_channel',
-			'movie_first_year',
-			'movie_first_month',
-			'movie_first_date',
-			'movie_title',
-			'movie_provider',
-			'cm_first_year',
-			'cm_first_month',
-			'cm_first_date',
-			'cm_title',
-			'cm_brand',
-			'pv_first_year',
-			'pv_first_month',
-			'pv_first_date',
-			'pv_title',
-			'pv_artist',
-			'show_first_year',
-			'show_first_month',
-			'show_first_date',
-			'show_final_year',
-			'show_final_month',
-			'show_final_date',
-			'show_title',
-			'show_venue',
-			'show_address',
-			'webtv_first_year',
-			'webtv_first_month',
-			'webtv_first_date',
-			'webtv_title',
-			'webtv_site',
-		);
-		if ( empty( $_POST['casting_type'] ) ) {
-			delete_post_meta( $post_id, 'casting_type' );
-		} else {
-			update_post_meta( $post_id, 'casting_type', $_POST['casting_type'] );
-		}
-
-		foreach ( $field_names as $field ) {
-			if ( empty( $_POST[ $field ] ) ) {
-				delete_post_meta( $post_id, 'famname_j' );
-			} else {
-				if ( preg_match( '/' . $_POST['casting_type'] . '/', $field ) ) {
-					update_post_meta( $post_id, $field, $_POST[ $field ] );
-				} else {
-					delete_post_meta( $post_id, $field );
-				}
-			}
-		}
-
-		$args                 = array(
-			'hide_empty' => 0,
-			'order_by'   => 'id',
-			'order'      => 'DESC',
-		);
-		$talents              = get_terms( 'casting-talent', $args );
-		$terms_this_post      = get_the_terms( $post_id, 'casting-talent' );
-		$term_slugs_this_post = array();
-		if ( ! empty( $terms_this_post ) ) {
-			foreach ( $terms_this_post as $term ) {
-				$term_slugs_this_post[] = $term->slug;
-			}
-		}
-
-		foreach ( $talents as $talent ) {
-			if ( in_array( $talent->slug, $term_slugs_this_post, true ) ) {
-				if ( ! empty( $_POST[ 'casting_role_' . $talent->slug ] ) ) {
-					update_post_meta( $post_id, 'casting_role_' . $talent->slug, $_POST[ 'casting_role_' . $talent->slug ] );
-				} else {
-					delete_post_meta( $post_id, 'casting_role_' . $talent->slug );
-				}
-
-				if ( ! empty( $_POST[ 'casting_check_' . $talent->slug ] ) ) {
-					update_post_meta( $post_id, 'casting_check_' . $talent->slug, $_POST[ 'casting_check_' . $talent->slug ] );
-				} else {
-					delete_post_meta( $post_id, 'casting_check_' . $talent->slug );
-				}
-
-				// ここに出演履歴への投稿追加を記述する
-			}
-		}
-	}
-
 	// Load scipt file for admin-post
-	static function ast_load_casting_script() {
-		if ( get_post_type() === 'casting-history' ) {
-			wp_enqueue_script( 'ast-casting-admin-script', plugins_url( 'js/casting-history-admin.js', __FILE__ ), array( 'jquery' ) );
+	static function ast_load_casting_history_script() {
+		if ( get_post_type() === 'casting' ) {
+			wp_enqueue_script( 'ast-casting-admin-script', plugins_url( 'js/casting-admin.js', __FILE__ ), array( 'jquery' ) );
 		}
 	}
 }
 
-$ast_action_cpt_casting = new AstCasting();
+$ast_action_cpt_casting_history = new AstCastingHistory;
